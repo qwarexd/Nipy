@@ -30,19 +30,19 @@ APPS = [
 class NiniteClone(ctk.CTk):
     def __init__(self):
         super().__init__()
-        self.title("Private Ninite Build v0.1")
+        self.title("Nipy Build v0.1")
         self.geometry("350x400")
         self.minsize(350, 300)
         
-        # Настройка сетки (Grid)
-        self.grid_rowconfigure(1, weight=1) # Список (строка 1) будет расширяться
+        
+        self.grid_rowconfigure(1, weight=1) 
         self.grid_columnconfigure(0, weight=1)
 
-        # 1. Заголовок
+
         self.label = ctk.CTkLabel(self, text="Auto Install", font=("Arial", 22, "bold"))
         self.label.grid(row=0, column=0, pady=20, padx=10, sticky="nsew")
 
-        # 2. Список программ (Scrollable Frame)
+
         self.scroll_frame = ctk.CTkScrollableFrame(self)
         self.scroll_frame.grid(row=1, column=0, padx=20, pady=10, sticky="nsew")
         
@@ -57,7 +57,7 @@ class NiniteClone(ctk.CTk):
             
             self.app_rows[name] = status_lbl
 
-        # 3. Кнопка (Закреплена снизу)
+
         self.start_btn = ctk.CTkButton(self, text="Begin Install", command=self.start_thread, height=40)
         self.start_btn.grid(row=2, column=0, pady=20, padx=20, sticky="ew")
 
@@ -69,7 +69,7 @@ class NiniteClone(ctk.CTk):
         threading.Thread(target=self.main_process, daemon=True).start()
 
     def download_files(self):
-        """Скачивание файлов через SFTP"""
+        """Downloading files via SFTP/FTP/FTPS"""
         if not os.path.exists(LOCAL_TEMP_PATH):
             os.makedirs(LOCAL_TEMP_PATH)
             
@@ -84,45 +84,45 @@ class NiniteClone(ctk.CTk):
                 remote_file = f"{REMOTE_DISTRIB_PATH}/{app['file']}"
                 local_file = os.path.join(LOCAL_TEMP_PATH, app['file'])
                 
-                self.label.configure(text=f"Скачивание: {app['name']}...")
+                self.label.configure(text=f"Downloading: {app['name']}...")
                 sftp.get(remote_file, local_file)
             
             sftp.close()
             ssh.close()
             return True
         except Exception as e:
-            print(f"Ошибка SFTP: {e}")
+            print(f"SFTP ERROR: {e}")
             return False
 
     def main_process(self):
-        # Шаг 1: Скачивание
-        self.label.configure(text="Подключение к серверу...")
+
+        self.label.configure(text="Connecting to server...")
         if not self.download_files():
-            self.label.configure(text="Ошибка подключения!", text_color="red")
+            self.label.configure(text="Connection Error!", text_color="red")
             self.start_btn.configure(state="normal")
             return
 
-        # Шаг 2: Установка
-        self.label.configure(text="Установка программ...")
+
+        self.label.configure(text="Installing...")
         for app in APPS:
             name = app['name']
             local_file = os.path.join(LOCAL_TEMP_PATH, app['file'])
             
-            self.update_status(name, "Установка...", "yellow")
+            self.update_status(name, "Installing...", "yellow")
             
             try:
-                # Запуск инсталлера
+
                 process = subprocess.run(f'"{local_file}" {app["args"]}', shell=True, capture_output=True)
                 
                 if process.returncode == 0:
-                    self.update_status(name, "Готово ✅", "green")
+                    self.update_status(name, "Done ✅", "green")
                 else:
-                    self.update_status(name, f"Код ошибки: {process.returncode} ❌", "red")
+                    self.update_status(name, f"Error code: {process.returncode} ❌", "red")
             except Exception as e:
-                self.update_status(name, f"Ошибка: {str(e)} ❌", "red")
+                self.update_status(name, f"Error: {str(e)} ❌", "red")
 
-        self.label.configure(text="Все готово!", text_color="green")
-        self.start_btn.configure(text="Выход", command=self.destroy, state="normal")
+        self.label.configure(text="All Done!", text_color="green")
+        self.start_btn.configure(text="Exit", command=self.destroy, state="normal")
 
 if __name__ == "__main__":
     app = NiniteClone()
