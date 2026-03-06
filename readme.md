@@ -14,6 +14,11 @@
 # How to build for yourself
   Что бы собрать App Installer омг нужно :
   ```
+  pip install pyinstaller
+  ```
+
+  
+  ```
   pip install scp
   ```
   ```
@@ -22,9 +27,15 @@
   ```  
   pip install customtkinter
   ```
+  и наконец 
+  ```
+  pyinstaller --onefile --noconsole --collect-all customtkinter AppInstaller/main.py
+  ```
+
 > [!TIP]
 > Что бы установщик у вас работал, нужно заглянуть в main.py и отредактировать секцию конфигурации т.к все там заменено на бланк
 >
 
 > [!NOTE]
 > На данный момент добавление приложений для инсталляции доступно только через редактированние секции APPS = []
+
