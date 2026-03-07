@@ -39,3 +39,7 @@
 > [!NOTE]
 > На данный момент добавление приложений для инсталляции доступно только через редактированние секции APPS = []
 
+
+## Known bugs
+- temp folder not deletes after installer is done his job
+
